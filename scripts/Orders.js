@@ -1,16 +1,44 @@
-import { getOrders } from "./database.js"
+import { getOrders, getMetals, getSizes, getStyles } from "./database.js"
+
+const metals = getMetals()
+const sizes = getSizes()
+const styles = getStyles()
 
 const buildOrderListItem = (order) => {
-    return `<li>
-        Order #${order.id} was placed on ${order.timestamp}
-    </li>`
-}
+    let totalCost = 0
 
+    const foundMetal = metals.find(
+        (metal) => {
+            return metal.id === order.metalId
+        }
+    )
+    totalCost += foundMetal.price
+// ======================================================
+    const foundSize = sizes.find(
+        (size) => {
+            return size.id === order.sizeId
+        }
+    )
+    totalCost += foundSize.price
+// ======================================================
+    const foundStyle = styles.find(
+        (style) => {
+            return style.id === order.styleId
+        }
+    )
+    totalCost += foundStyle.price
+// ======================================================
+    const costString = totalCost.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD"
+    })
+
+    return `<li>
+        Order #${order.id} cost ${costString} placed on ${order.timestamp}
+    </li>`
+    }
 export const Orders = () => {
-    /*
-        Can you explain why the state variable has to be inside
-        the component function for Orders, but not the others?
-    */
+
     const orders = getOrders()
 
     let html = "<ul>"
@@ -22,4 +50,3 @@ export const Orders = () => {
 
     return html
 }
-
